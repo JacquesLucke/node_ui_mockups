@@ -29,7 +29,7 @@ from . import auto_load
 auto_load.init()
 
 def register():
-    auto_load.register()
+    auto_load.register(verbose=True)
 
 def unregister():
-    auto_load.unregister()
+    auto_load.unregister(verbose=True)
