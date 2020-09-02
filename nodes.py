@@ -1,5 +1,5 @@
-from __future__ import annotations
 import bpy
+from bpy.props import StringProperty
 from .sockets import find_socket_cls_by_idname
 
 class BaseNode:
@@ -8,7 +8,7 @@ class BaseNode:
         self.declaration(builder)
         builder.refresh_node(self)
 
-    def declaration(self, builder: NodeBuilder):
+    def declaration(self, builder):
         pass
 
     def draw_buttons(self, context, layout):
@@ -104,7 +104,7 @@ class ColliderGeometryNode(bpy.types.Node, BaseNode):
 
 class GeometryFromObjectNode(bpy.types.Node, BaseNode):
     bl_idname = "GeometryFromObjectNode"
-    bl_label = "Geometry From Object"
+    bl_label = "Geometry from Object"
 
     def declaration(self, builder):
         builder.input("NodeSocketObject", "Object")
@@ -114,7 +114,34 @@ class FilterDynamicsNode(bpy.types.Node, BaseNode):
     bl_idname = "FilterDynamicsNode"
     bl_label = "Filter Dynamics"
 
+    filter_name: StringProperty(name="Filter Name")
+
     def declaration(self, builder):
+        builder.input("GeometrySocket", "Geometry")
         builder.input("DynamicsSocket", "Dynamics")
-        builder.input("Geometry", "Geometry")
-        builder.output("Geometry", "Geometry")
+        builder.output("GeometrySocket", "Geometry")
+
+    def draw(self, layout):
+        layout.prop(self, "filter_name", text="Filter")
+        layout.enabled = not self.inputs["Dynamics"].is_linked
+
+class CollidersFromSceneNode(bpy.types.Node, BaseNode):
+    bl_idname = "CollidersFromSceneNode"
+    bl_label = "Colliders from Scene"
+
+    def declaration(self, builder):
+        builder.output("InfluencesSocket", "Colliders")
+
+class MyGroupInputNode(bpy.types.Node, BaseNode):
+    bl_idname = "MyGroupInputNode"
+    bl_label = "Group Input"
+
+    def declaration(self, builder):
+        builder.output("GeometrySocket", "Geometry")
+
+class MyGroupOutputNode(bpy.types.Node, BaseNode):
+    bl_idname = "MyGroupOutputNode"
+    bl_label = "Group Output"
+
+    def declaration(self, builder):
+        builder.input("GeometrySocket", "Geometry")

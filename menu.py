@@ -9,7 +9,6 @@ class MockupNodesMenu(bpy.types.Menu):
         for node_class in BaseNode.__subclasses__():
             self.add_node(node_class.bl_idname, node_class.bl_label)
 
-
     def add_node(self, idname, name):
         props = self.layout.operator("node.add_node", text=name)
         props.type = idname
